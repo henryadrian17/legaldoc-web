@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Administrar usuario(Administrador)	ad_administrarUser</title>
+    <title>Comunicacion Asesore(Asesores)	c_comunicacionAsesor</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -35,7 +35,10 @@
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.6/css/ionicons.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style2.css">
     <link rel="stylesheet" href="css/login.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
@@ -110,23 +113,44 @@
 <!-- ======= Final del Header ======= -->
 <!-- ======= Comienzo del contenido ======= -->
 <div class="global-container my-5">
-    <div class="container my-5">
 
-      <div class="chat-popup " id="myForm">
-        <form action="/action_page.php" class="form-container">
-          <h1>Chat</h1>
+    <div id="center-text">
+        <h2>Comunicacion con asesor</h2>
+        <p>Para comunicarse con Asesor dirigirse a la esquina inferior derecha</p>
+      </div> 
+    <div id="body"> 
       
-          <label for="msg"><b>Message</b></label>
-          <textarea placeholder="Type message.." name="msg" required></textarea>
+    <div id="chat-circle" class="btn btn-raised">
+            <div id="chat-overlay"></div>
+                <i class="material-icons">speaker_phone</i>
+        </div>
       
-          <button type="submit" class="btn">Send</button>
-          <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-        </form>
+      <div class="chat-box">
+        <div class="chat-box-header">
+          ChatBot
+          <span class="chat-box-toggle"><i class="material-icons">close</i></span>
+        </div>
+        <div class="chat-box-body">
+          <div class="chat-box-overlay">   
+          </div>
+          <div class="chat-logs">
+           
+          </div><!--chat-log -->
+        </div>
+        <div class="chat-input">      
+          <form>
+            <input type="text" id="chat-input" placeholder="Send a message..."/>
+          <button type="submit" class="chat-submit" id="chat-submit"><i class="material-icons">send</i></button>
+          </form>      
+        </div>
       </div>
-
+      
+      
+      
+      
     </div>
-</div>
 
+</div>
 <!-- ======= Final del contenido ======= -->
 <!-- ======= Comienzo del Footer ======= -->
 
@@ -208,6 +232,7 @@
 </script>
 <!-- Template Main JS File -->
 <script src="js/main.js"></script>
+<script src="js/control.js"></script>
 
 </body>
 
