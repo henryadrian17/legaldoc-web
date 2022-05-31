@@ -164,3 +164,9 @@ body{
     font-weight: 700;
 
 }
+
+.card-img-top{
+    height: 15rem;
+    width: 15rem;  
+ 
+}
