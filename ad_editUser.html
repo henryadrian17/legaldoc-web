@@ -5,33 +5,45 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Inicio sesion (cliente)</title>
+  <title>Editar usuario(Administrador)</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
+  <!-- Favicons -->
+  <link href="img/favicon.png" rel="icon">
+  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+
   <!-- Vendor CSS Files -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
   <link href="css/variables.css" rel="stylesheet">
   <link href="css/main.css" rel="stylesheet">
   <link href="css/dropdown.css" rel="stylesheet">
-  <link href="css/ero.css" rel="stylesheet">
-  
 
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
   <link rel="stylesheet" href="css/owl.carousel.min.css">
   <link rel="stylesheet" href="css/owl.theme.default.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.6/css/ionicons.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
-
   <link rel="stylesheet" href="css/login.css">
+
+  <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 
 
 </head>
 
 <body>
-
-  <!-- ======= Comienzo del Header ======= -->
-  <header id="header" class="header fixed-top" data-scrollto-offset="0">
+   <!-- ======= Comienzo del Header ======= -->
+   <header id="header" class="header fixed-top" data-scrollto-offset="0">
     <div class="container-fluid d-flex align-items-center justify-content-between">
 
       <a href="index.html" class="logo d-flex align-items-center scrollto me-auto me-lg-0">
@@ -78,16 +90,18 @@
             }
             </script>
           </li>
-          <li><a class="nav-link scrollto" href="index.html#about">Revision gramatical</a></li>
-          <li><a class="nav-link scrollto" href="index.html#services">Crear documentos</a></li>
-          <li><a class="nav-link scrollto" href="index.html#portfolio">Asesoria</a></li>
-          <li><a class="nav-link scrollto" href="index.html#team">Mis ordenes</a></li>
+          <li><a class="nav-link scrollto" href="index.html#about">Administrar usuarios</a></li>
+          <li><a class="nav-link scrollto" href="index.html#services">Solicitudes de asesores</a></li>
+          <li><a class="nav-link scrollto" href="index.html#services">Administrar documento</a></li>
+
         </ul>
-      </nav>
-      <!-- .navbar -->
+        <i class="bi bi-list mobile-nav-toggle d-none"></i>
+      </nav><!-- .navbar -->
+
         <button class="btn btn-lg" style="background-color:white;">
           <i class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
        </button>
+
 
     </div>
   </header>
@@ -98,25 +112,32 @@
 <div class="global-container">
 	<div class="card login-form">
 	<div class="card-body">
-		<h3 class="card-title text-center">Log in</h3>
+		<h3 class="card-title text-center">Mi perfil</h3>
 		<div class="card-text">
 			<!--
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">Incorrect username or password.</div> -->
 			<form>
 				<!-- to error: add class "has-danger" -->
-				<div class="form-group">
+
+        <div class="form-group">
 					<label for="exampleInputEmail1">Correo</label>
 					<input type="email" class="form-control form-control-sm" id="exampleInputEmail1" aria-describedby="emailHelp">
 				</div>
 				<div class="form-group">
-					<label for="exampleInputPassword1">Contraseña</label>
+					<label for="exampleInputEmail1">Contraseña</label>
+					<input type="email" class="form-control form-control-sm" id="exampleInputEmail1" aria-describedby="emailHelp">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputPassword1">Repetir Contraseña</label>
 					<input type="password" class="form-control form-control-sm" id="exampleInputPassword1">
 				</div>
-				<button type="submit" class="btn-login btn-primary btn-block">Iniciar sesion</button>
-				
-				<div class="sign-up">
-				 ¿No tienes una cuenta? <a href="#">Crea una</a>
+        <div class="form-group">
+					<label for="exampleInputPassword1">Tipo de usuario</label>
+					<input type="password" class="form-control form-control-sm" id="exampleInputPassword1">
 				</div>
+				<button type="submit" class="btn btn-primary btn-block">Actualizar</button>
+				
+
 			</form>
 		</div>
 	</div>
@@ -125,6 +146,7 @@
 
 
 <!-- ======= Final del login ======= -->
+ 
   <!-- ======= Comienzo del Footer ======= -->
   <br><br>
   <footer id="footer" class="footer">
@@ -149,17 +171,16 @@
             <h4>Consultas</h4>
             <ul>
               <li><i class="bi bi-chevron-right"></i> <a href="#">Inicio</a></li>
-              <li><i class="bi bi-chevron-right"></i> <a href="#">Revision gramatical</a></li>
-              <li><i class="bi bi-chevron-right"></i> <a href="#">Crear documentos</a></li>
-              <li><i class="bi bi-chevron-right"></i> <a href="#">Asesoria</a></li>
-              <li><i class="bi bi-chevron-right"></i> <a href="#">Mis ordenes</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="#">Administrar usuarios</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="#">Solicitudes de asesores</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="#">Administrar documentos</a></li>
+              
             </ul>
           </div>
 
           <div class="col-lg-3 col-md-6 footer-links">
             <br><br>
             <ul>
-              <li><i class="bi bi-chevron-right"></i> <a href="#">Ver carrito</a></li>
 
             </ul>
           </div>
@@ -199,7 +220,6 @@
 
   </footer>
   <!-- ======= Final del Footer ======= -->
-
 </body>
 
 </html>
