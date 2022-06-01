@@ -2635,6 +2635,7 @@ section {
 .footer {
   color: var(--color-white);
   font-size: 14px;
+  background-color: #000080;
 }
 .footer .footer-content {
   background: var(--color-secondary);
