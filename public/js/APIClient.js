@@ -100,7 +100,7 @@ function ingresarUsuario(){
                 }
                  */
                 document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
-                SwalRedirect("Usuario autenticado satisfactoriamente", "/");
+                SwalRedirect("Bienvenido ".concat(data.data.nombre), "/");
             } else {
                 SwalError(data.serviceStatus.message);
             }
