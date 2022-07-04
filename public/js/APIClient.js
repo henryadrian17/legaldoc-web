@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
+///const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
+const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -59,7 +60,8 @@ function registrarUsuario() {
         });
     }
 }
-function ingresarUsuario(){
+
+function ingresarUsuario() {
     let usuario = {
         correo: document.getElementById("exampleInputEmail1"),
         contrasena: document.getElementById("exampleInputPassword1"),
@@ -109,24 +111,58 @@ function ingresarUsuario(){
         });
     }
 }
+
 function verificarSesion() {
     console.log("verificando sesion");
-    if(document.cookie.indexOf("tockenDeAcceso=") === -1 && window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/"){
+    if (document.cookie.indexOf("tockenDeAcceso=") === -1 && window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
         SwalRedirect("No hay sesion iniciada", "/login");
+    } else {
+        let tockenDeAcceso = document.cookie.split("tockenDeAcceso=")[1].split(";")[0];
+        if (tockenDeAcceso == "") {
+            SwalRedirect("No hay sesion iniciada", "/login");
+        } else if (window.location.pathname == "/login" || window.location.pathname == "/register") {
+            SwalRedirect("Ya ha iniciado sesion", "/");
+        } else {
+            fetch(API_URL.concat('verifytoken'), {
+                method: 'GET',
+                headers: {
+                    'Authorization': tockenDeAcceso
+                }
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data.serviceStatus.status !== 200) {
+                    document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }else{
+                    console.log(data)
+                }
+            });
+        }
     }
-    let tockenDeAcceso = document.cookie.split("tockenDeAcceso=")[1].split(";")[0];
-    console.log(tockenDeAcceso);
-    if (tockenDeAcceso == "") {
-        SwalRedirect("No hay sesion iniciada", "/login");
-    }
-    else if (window.location.pathname == "/login" || window.location.pathname == "/register") {
-        SwalRedirect("Ya hay sesion iniciada", "/");
-    }
+
 }
+
 function cerrarSesion() {
-    document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    SwalRedirect("Sesion cerrada", "/login");
+    fetch(API_URL.concat('logout'), {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': document.cookie.split("tockenDeAcceso=")[1].split(";")[0]
+        }
+    }).then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        if (data.serviceStatus.status == 200) {
+            document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            SwalRedirect("Sesion cerrada", "/login");
+        } else {
+            SwalError(data.serviceStatus.message);
+        }
+    }).catch(function (error) {
+        SwalError("Error al cerrar sesion");
+    });
 }
+
 function SwalError(message) {
     Swal.fire({
         icon: 'error',
@@ -136,6 +172,7 @@ function SwalError(message) {
         confirmButtonText: 'Ok'
     });
 }
+
 function SwalSuccess(message) {
     Swal.fire({
         icon: 'success',
@@ -145,6 +182,7 @@ function SwalSuccess(message) {
         confirmButtonText: 'Ok'
     });
 }
+
 function SwalLoading(message) {
     Swal.fire({
         title: 'Espere...',
@@ -159,6 +197,7 @@ function SwalLoading(message) {
         }
     });
 }
+
 function SwalRedirect(message, url) {
     //Swal redirect to url after 3 seconds
     Swal.fire({
