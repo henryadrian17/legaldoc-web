@@ -8,7 +8,7 @@
 		<div class="card-text">
 			<!--
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">Incorrect username or password.</div> -->
-			<form>
+			<div id="loginForm">
 				<!-- to error: add class "has-danger" -->
 				<div class="form-group">
 					<label for="exampleInputEmail1">Correo</label>
@@ -18,11 +18,11 @@
 					<label for="exampleInputPassword1">Contraseña</label>
 					<input type="password" class="form-control form-control-sm" id="exampleInputPassword1">
 				</div>
-				<a href="../index.html"> <input class="btn btn-login btn-primary btn-block botones" type="button" value="Iniciar sesion"> </button> </a>
+				<input class="btn btn-login btn-primary btn-block botones" type="button" value="Iniciar sesion" onclick="ingresarUsuario()"> </button>
 				<div class="sign-up">
 				 ¿No tienes una cuenta? <a href="/register">Crea una</a>
 				</div>
-			</form>
+			</div>
 		</div>
 	</div>
   </div>

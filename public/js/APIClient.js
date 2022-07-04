@@ -1,5 +1,4 @@
 const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
-
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -51,7 +50,7 @@ function registrarUsuario() {
                 }
                  */
                 document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
-                SwalRedirect("Usuario creado satisfactoriamente", "/login");
+                SwalRedirect("Usuario creado satisfactoriamente", "/");
             } else {
                 SwalError(data.serviceStatus.message);
             }
@@ -60,7 +59,67 @@ function registrarUsuario() {
         });
     }
 }
-
+function ingresarUsuario(){
+    let usuario = {
+        correo: document.getElementById("exampleInputEmail1"),
+        contrasena: document.getElementById("exampleInputPassword1"),
+    };
+    // validar que los campos no esten vacios
+    if (usuario.correo.value == "" || usuario.contrasena.value == "") {
+        SwalError("Todos los campos son obligatorios");
+    } else {
+        let url = API_URL.concat('login');
+        let data = {
+            correo: usuario.correo.value,
+            contrasena: usuario.contrasena.value,
+        };
+        //Swal loading
+        SwalLoading("Ingresando...");
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data.serviceStatus.status == 200) {
+                /*
+                {
+                    "data": {
+                        "apellido": "Molina",
+                        "nombre": "Henry",
+                        "tockenDeAcceso": "N5vk3f2PXjNTYuxtlHo+9qKT0vvNEgVTPeBx6jwY2b4=",
+                        "fechaExpiracionTocken": "2022-07-04T19:34:40.561-05:00"
+                    },
+                    "serviceStatus": {
+                        "status": 200,
+                        "message": "Usuario autenticado satisfactoriamente"
+                    }
+                }
+                 */
+                document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
+                SwalRedirect("Usuario autenticado satisfactoriamente", "/");
+            } else {
+                SwalError(data.serviceStatus.message);
+            }
+        }).catch(function (error) {
+            SwalError("Error al ingresar");
+        });
+    }
+}
+function verificarSesion() {
+    let tockenDeAcceso = document.cookie.split("tockenDeAcceso=")[1].split(";")[0];
+    console.log("verificando sesion");
+    console.log(tockenDeAcceso);
+    if (tockenDeAcceso == "") {
+        SwalRedirect("No hay sesion iniciada", "/login");
+    }
+    else if (window.location.pathname == "/login" || window.location.pathname == "/register") {
+        SwalRedirect("Ya hay sesion iniciada", "/");
+    }
+}
 function SwalError(message) {
     Swal.fire({
         icon: 'error',
@@ -70,7 +129,6 @@ function SwalError(message) {
         confirmButtonText: 'Ok'
     });
 }
-
 function SwalSuccess(message) {
     Swal.fire({
         icon: 'success',
@@ -80,7 +138,6 @@ function SwalSuccess(message) {
         confirmButtonText: 'Ok'
     });
 }
-
 function SwalLoading(message) {
     Swal.fire({
         title: 'Espere...',
