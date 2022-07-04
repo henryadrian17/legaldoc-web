@@ -110,8 +110,11 @@ function ingresarUsuario(){
     }
 }
 function verificarSesion() {
-    let tockenDeAcceso = document.cookie.split("tockenDeAcceso=")[1].split(";")[0];
     console.log("verificando sesion");
+    if(document.cookie.indexOf("tockenDeAcceso=") === -1 && window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/"){
+        SwalRedirect("No hay sesion iniciada", "/login");
+    }
+    let tockenDeAcceso = document.cookie.split("tockenDeAcceso=")[1].split(";")[0];
     console.log(tockenDeAcceso);
     if (tockenDeAcceso == "") {
         SwalRedirect("No hay sesion iniciada", "/login");
@@ -119,6 +122,10 @@ function verificarSesion() {
     else if (window.location.pathname == "/login" || window.location.pathname == "/register") {
         SwalRedirect("Ya hay sesion iniciada", "/");
     }
+}
+function cerrarSesion() {
+    document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    SwalRedirect("Sesion cerrada", "/login");
 }
 function SwalError(message) {
     Swal.fire({
