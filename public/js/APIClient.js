@@ -1,5 +1,7 @@
-///const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
-const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
+const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
+const SITE_URL = 'http://localhost:3000';
+
+//const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -26,38 +28,29 @@ function registrarUsuario() {
         };
         //Swal loading
         SwalLoading("Registrando usuario...");
-        fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            if (data.serviceStatus.status == 201) {
-                /*
-                {
-                    "data": {
-                        "apellido": "Molina",
-                        "nombre": "Henry",
-                        "tockenDeAcceso": "N5vk3f2PXjNTYuxtlHo+9qKT0vvNEgVTPeBx6jwY2b4=",
-                        "fechaExpiracionTocken": "2022-07-04T19:34:40.561-05:00"
-                    },
-                    "serviceStatus": {
-                        "status": 201,
-                        "message": "Usuario creado satisfactoriamente"
-                    }
+        try{
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                 */
-                document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
-                SwalRedirect("Usuario creado satisfactoriamente", "/");
-            } else {
-                SwalError(data.serviceStatus.message);
-            }
-        }).catch(function (error) {
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data.serviceStatus.status == 201) {
+                    document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
+                    SwalRedirect("Usuario creado satisfactoriamente", "/");
+                } else {
+                    SwalError(data.serviceStatus.message);
+                }
+            }).catch(function (error) {
+                SwalError("Error al registrar usuario");
+            });
+        }catch (error){
+            Swal.close()
             SwalError("Error al registrar usuario");
-        });
+        }
     }
 }
 
@@ -77,38 +70,29 @@ function ingresarUsuario() {
         };
         //Swal loading
         SwalLoading("Ingresando...");
-        fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            if (data.serviceStatus.status == 200) {
-                /*
-                {
-                    "data": {
-                        "apellido": "Molina",
-                        "nombre": "Henry",
-                        "tockenDeAcceso": "N5vk3f2PXjNTYuxtlHo+9qKT0vvNEgVTPeBx6jwY2b4=",
-                        "fechaExpiracionTocken": "2022-07-04T19:34:40.561-05:00"
-                    },
-                    "serviceStatus": {
-                        "status": 200,
-                        "message": "Usuario autenticado satisfactoriamente"
-                    }
+        try{
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                 */
-                document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
-                SwalRedirect("Bienvenido ".concat(data.data.nombre), "/");
-            } else {
-                SwalError(data.serviceStatus.message);
-            }
-        }).catch(function (error) {
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data.serviceStatus.status == 200) {
+                    document.cookie = "tockenDeAcceso=" + data.data.tockenDeAcceso + "; expires=" + data.data.fechaExpiracionTocken + "; path=/";
+                    SwalRedirect("Bienvenido ".concat(data.data.nombre), "/");
+                } else {
+                    SwalError(data.serviceStatus.message);
+                }
+            }).catch(function (error) {
+                SwalError("Error al ingresar");
+            });
+        }catch (error){
+            Swal.close()
             SwalError("Error al ingresar");
-        });
+        }
     }
 }
 
@@ -133,7 +117,7 @@ function verificarSesion() {
             }).then(function (data) {
                 if (data.serviceStatus.status !== 200) {
                     document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                }else{
+                } else {
                     console.log(data)
                 }
             });
@@ -163,6 +147,79 @@ function cerrarSesion() {
     });
 }
 
+function traerListaDeAsesores(pageNum) {
+    console.log(pageNum);
+    SwalLoading("");
+    if(isNaN(pageNum) || pageNum === undefined || pageNum == null){
+        pageNum = 1;
+    }
+    try{
+        fetch(API_URL.concat('asesores?pageNum=').concat(pageNum.toString()), {
+            method: 'GET'
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            let asesoresBox = document.getElementsByClassName("row row-cols-1 row-cols-md-3 g-4 mx-1")[0];
+            asesoresBox.innerHTML = "";
+            if (data.serviceStatus.status == 200) {
+                asesoresBox.innerHTML = generarTargetasAsesores(data.data.content);
+                let pagination = document.getElementsByClassName("pagination")[0];
+                pagination.innerHTML = paginadoListaAsesores(data.data.pageable.pageNumber + 1, pageNum, data.data.totalPages);
+            }
+            //CLOSE Swal
+            Swal.close();
+        }).catch(function (error) {
+            Swal.close();
+            SwalError("Error al traer lista de asesores");
+        });
+    }catch (e){
+        Swal.close();
+        SwalError("Error al traer lista de asesores");
+    }
+}
+
+function generarTargetasAsesores(data) {
+    let targetas = "";
+    for (let i = 0; i < data.length; i++) {
+        targetas += `
+            <div class="col">
+                <div class="card h-100">
+                    <h5 class="card-title text-center"> Asesor legal</h5>
+                    <img src="${SITE_URL.concat('/img/').concat(data[i].foto)}" class="card-img-top mx-auto " alt="1">
+                    <div class="card-body">
+                        <h5 class="card-title">${data[i].apellido}, ${data[i].nombre}</h5>
+                        <p class="card-text">${data[i].descripcionUsuario}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/c_contratarAsesor?id=${data[i].id}"><button type="button" class="btn btn-primary botones">Contratar</button></a> 
+                    </div>
+                </div>
+            </div>`;
+    }
+    return targetas;
+}
+
+function paginadoListaAsesores(actual,solicitda, totalpaginas) {
+    let paginas = "";
+    if(actual === 1){
+        paginas += `<li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>`;
+    }else{
+        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual-1})">Anterior</a></li>`;
+    }
+    for (let i = 1; i <= totalpaginas; i++) {
+        if(i === actual){
+            paginas += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
+        }else{
+            paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${i})">${i}</a></li>`;
+        }
+    }
+    if(actual === totalpaginas){
+        paginas += `<li class="page-item disabled"><a class="page-link" href="#">Siguiente</a></li>`;
+    }else{
+        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual+1})">Siguiente</a></li>`;
+    }
+    return paginas;
+}
 function SwalError(message) {
     Swal.fire({
         icon: 'error',
