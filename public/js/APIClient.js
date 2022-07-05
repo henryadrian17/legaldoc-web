@@ -4,6 +4,7 @@ const SITE_URL = 'http://localhost:3000';
 const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
 
 let lista_servicios = [];
+
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -182,7 +183,7 @@ function traerListaDeAsesores(pageNum) {
 
 function mostrarContratarAsesor() {
     SwalLoading("");
-    try{
+    try {
         let id = window.location.href.split("?")[1].split("=")[1];
         fetch(API_URL.concat('asesores\\').concat(id), {
             method: 'GET'
@@ -202,26 +203,32 @@ function mostrarContratarAsesor() {
             Swal.close()
             SwalError("Error al traer asesor");
         })
-    }catch (e) {
+    } catch (e) {
         Swal.close()
         SwalError("Error al traer asesor");
     }
 }
-function mostrarListaServicios(idServicio){
+
+function mostrarListaServicios(idServicio) {
     lista_servicios.forEach(servicio => {
-        if(servicio.id === idServicio){
+        if (servicio.id === idServicio) {
             let servicioBox = document.getElementsByClassName("col-6  mb-3 mt-2")[1];
             servicioBox.innerHTML = generarTarjetaServicio(servicio);
         }
     })
 }
-function generarTarjetaServicio(servicio){
+
+function onchangeServicios() {
+    let id = document.getElementsByClassName("form-select mt-2")[0].value;
+    mostrarListaServicios(parseInt(id));
+}
+
+function generarTarjetaServicio(servicio) {
     serDetalle = `
-                    <h4>Precio ${servicio.precioServicio}</h4>
+                    <h4>Precio B\\. ${servicio.precioServicio}</h4>
                     <p>${servicio.descriptionServicio}</p>
-                    <select class="form-select mt-2">
-                        <option selected="">Seleccionar un Servicio</option>
-                        ${lista_servicios.map(serviciom => `<option value="${serviciom.id}">${serviciom.nombreServicio}</option>`).join("")}
+                    <select class="form-select mt-2" onchange="onchangeServicios()">
+                        ${lista_servicios.map(serviciom => `<option value="${serviciom.id}" ${serviciom.id === servicio.id ? 'select' : ""}>${serviciom.nombreServicio}</option>`).join("")}
                     </select><br>
                     <a href="/c_carritoCompra">
                         <button type="button" class="btn btn-primary mt-2 botones">Contratar</button>
@@ -234,10 +241,15 @@ function generarTarjetaServicio(servicio){
 
 
 function generarTarjetaAsesor(data) {
+    console.log(data);
     tarjeta = `
                
                         <div class="col-md-4">
-                            <img src="${SITE_URL.concat("/img/").concat(data.foto)}" class="card-img" alt="...">
+                            
+                            <div class="card-body">
+                                <img src="${SITE_URL.concat("/img/").concat(data.foto)}" class="card-img" alt="...">
+                                <p class="card-title">${data.nombre} ${data.apellido}</>
+                            </div>
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
@@ -350,3 +362,4 @@ function SwalRedirect(message, url) {
         window.location.href = url;
     });
 }
+
