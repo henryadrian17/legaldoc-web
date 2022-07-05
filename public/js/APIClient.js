@@ -2,6 +2,8 @@
 const SITE_URL = 'http://localhost:3000';
 
 const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
+
+let lista_servicios = [];
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -28,7 +30,7 @@ function registrarUsuario() {
         };
         //Swal loading
         SwalLoading("Registrando usuario...");
-        try{
+        try {
             fetch(url, {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -47,7 +49,7 @@ function registrarUsuario() {
             }).catch(function (error) {
                 SwalError("Error al registrar usuario");
             });
-        }catch (error){
+        } catch (error) {
             Swal.close()
             SwalError("Error al registrar usuario");
         }
@@ -70,7 +72,7 @@ function ingresarUsuario() {
         };
         //Swal loading
         SwalLoading("Ingresando...");
-        try{
+        try {
             fetch(url, {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -89,7 +91,7 @@ function ingresarUsuario() {
             }).catch(function (error) {
                 SwalError("Error al ingresar");
             });
-        }catch (error){
+        } catch (error) {
             Swal.close()
             SwalError("Error al ingresar");
         }
@@ -118,7 +120,7 @@ function verificarSesion() {
                 if (data.serviceStatus.status !== 200) {
                     document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 } else {
-                    console.log(data)
+                    console.log("sesion verificada")
                 }
             });
         }
@@ -150,10 +152,10 @@ function cerrarSesion() {
 function traerListaDeAsesores(pageNum) {
     console.log(pageNum);
     SwalLoading("");
-    if(isNaN(pageNum) || pageNum === undefined || pageNum == null){
+    if (isNaN(pageNum) || pageNum === undefined || pageNum == null) {
         pageNum = 1;
     }
-    try{
+    try {
         fetch(API_URL.concat('asesores?pageNum=').concat(pageNum.toString()), {
             method: 'GET'
         }).then(function (response) {
@@ -172,10 +174,84 @@ function traerListaDeAsesores(pageNum) {
             Swal.close();
             SwalError("Error al traer lista de asesores");
         });
-    }catch (e){
+    } catch (e) {
         Swal.close();
         SwalError("Error al traer lista de asesores");
     }
+}
+
+function mostrarContratarAsesor() {
+    SwalLoading("");
+    try{
+        let id = window.location.href.split("?")[1].split("=")[1];
+        fetch(API_URL.concat('asesores\\').concat(id), {
+            method: 'GET'
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data.serviceStatus.status == 200) {
+                // replace item with class row no-gutters using generarTarjetaAsesor(data)
+                let asesor = data.data;
+                let asesorBox = document.getElementsByClassName("row no-gutters")[0];
+                asesorBox.innerHTML = generarTarjetaAsesor(asesor);
+                lista_servicios = asesor.servicios;
+                mostrarListaServicios(lista_servicios[0].id);
+            }
+            Swal.close()
+        }).catch(function (error) {
+            Swal.close()
+            SwalError("Error al traer asesor");
+        })
+    }catch (e) {
+        Swal.close()
+        SwalError("Error al traer asesor");
+    }
+}
+function mostrarListaServicios(idServicio){
+    lista_servicios.forEach(servicio => {
+        if(servicio.id === idServicio){
+            let servicioBox = document.getElementsByClassName("col-6  mb-3 mt-2")[1];
+            servicioBox.innerHTML = generarTarjetaServicio(servicio);
+        }
+    })
+}
+function generarTarjetaServicio(servicio){
+    serDetalle = `
+                    <h4>Precio ${servicio.precioServicio}</h4>
+                    <p>${servicio.descriptionServicio}</p>
+                    <select class="form-select mt-2">
+                        <option selected="">Seleccionar un Servicio</option>
+                        ${lista_servicios.map(serviciom => `<option value="${serviciom.id}">${serviciom.nombreServicio}</option>`).join("")}
+                    </select><br>
+                    <a href="/c_carritoCompra">
+                        <button type="button" class="btn btn-primary mt-2 botones">Contratar</button>
+                    </a><br>
+                    <a href="/c_carritoCompra">
+                        <button type="button" class="btn btn-primary mt-2 botones">Añadir al carrito</button>
+    `
+    return serDetalle;
+}
+
+
+function generarTarjetaAsesor(data) {
+    tarjeta = `
+               
+                        <div class="col-md-4">
+                            <img src="${SITE_URL.concat("/img/").concat(data.foto)}" class="card-img" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">Asesor legal</h5>
+                                <p class="card-text">${data.descripcionUsuario}</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Contacto</h5>
+                            <p class="card-text">E-mail: ${data.correo}</p>
+                        </div>
+               
+    `
+    return tarjeta;
 }
 
 function generarTargetasAsesores(data) {
@@ -191,7 +267,7 @@ function generarTargetasAsesores(data) {
                         <p class="card-text">${data[i].descripcionUsuario}</p>
                     </div>
                     <div class="card-footer">
-                        <a href="/c_contratarAsesor?id=${data[i].id}"><button type="button" class="btn btn-primary botones">Contratar</button></a> 
+                        <a href="/c_contratarAsesor?id=${data[i].idUser}"><button type="button" class="btn btn-primary botones">Contratar</button></a> 
                     </div>
                 </div>
             </div>`;
@@ -199,27 +275,28 @@ function generarTargetasAsesores(data) {
     return targetas;
 }
 
-function paginadoListaAsesores(actual,solicitda, totalpaginas) {
+function paginadoListaAsesores(actual, solicitda, totalpaginas) {
     let paginas = "";
-    if(actual === 1){
+    if (actual === 1) {
         paginas += `<li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>`;
-    }else{
-        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual-1})">Anterior</a></li>`;
+    } else {
+        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual - 1})">Anterior</a></li>`;
     }
     for (let i = 1; i <= totalpaginas; i++) {
-        if(i === actual){
+        if (i === actual) {
             paginas += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
-        }else{
+        } else {
             paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${i})">${i}</a></li>`;
         }
     }
-    if(actual === totalpaginas){
+    if (actual === totalpaginas) {
         paginas += `<li class="page-item disabled"><a class="page-link" href="#">Siguiente</a></li>`;
-    }else{
-        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual+1})">Siguiente</a></li>`;
+    } else {
+        paginas += `<li class="page-item"><a class="page-link" href="#" onclick="traerListaDeAsesores(${actual + 1})">Siguiente</a></li>`;
     }
     return paginas;
 }
+
 function SwalError(message) {
     Swal.fire({
         icon: 'error',
