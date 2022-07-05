@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
+//const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
 const SITE_URL = 'http://localhost:3000';
 
-//const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
+const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
