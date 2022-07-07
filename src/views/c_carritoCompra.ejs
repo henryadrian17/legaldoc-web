@@ -1,72 +1,81 @@
 <%- include('partes/header'); %>
 
-<!-- ======= Comienzo del contenido ======= -->
-<br>
-<div class="container">
+  <!-- ======= Comienzo del contenido ======= -->
+  <br>
+  <div class="container">
 
     <h2 class="text-center">Carrito de compra</h2>
     <br>
-    <div class="card service align-items-center">
-      <img src="../../img/profile.png" class="foto" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Asesoría legal</h5>
-        <p class="card-text">
-          No menos importante que las demás por lo que representa para la evolución de la empresa, 
-          es cada vez más solicitada. Las TICs y otras tecnologías disruptivas forman el futuro de 
-          los negocios, por lo cual necesitas saber cómo sacarle el mayor provecho a los recursos que 
-          tienes o deberías implementar.
-        </p>                  
-        <a href="#" class="addCar btn btn-danger" data-idservice="informatica" data-img="img/legaldocGrande.svg"
-        data-info="Asesor Legal 3" data-precio="50.00" data-statu="0">Eliminar del carrito</a>
-      </div>
-    </div>
-    <br>
-    <div class="card service align-items-center">
-      <img src="../../img/profile.png" class="foto" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Asesoría legal</h5>
-        <p class="card-text">
-          No menos importante que las demás por lo que representa para la evolución de la empresa, 
-          es cada vez más solicitada. Las TICs y otras tecnologías disruptivas forman el futuro de 
-          los negocios, por lo cual necesitas saber cómo sacarle el mayor provecho a los recursos que 
-          tienes o deberías implementar.
-        </p>                  
-        <a href="#" class="addCar btn btn-danger" data-idservice="informatica" data-img="img/legaldocGrande.svg"
-        data-info="Asesor Legal 3" data-precio="50.00" data-statu="0">Eliminar del carrito</a>
-      </div>
-    </div>
-    <br>
-    <div class="card service align-items-center">
-      <img src="../../img/profile.png" class="foto" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Asesoría legal</h5>
-        <p class="card-text">
-          No menos importante que las demás por lo que representa para la evolución de la empresa, 
-          es cada vez más solicitada. Las TICs y otras tecnologías disruptivas forman el futuro de 
-          los negocios, por lo cual necesitas saber cómo sacarle el mayor provecho a los recursos que 
-          tienes o deberías implementar.
-        </p>                  
-        <a href="#" class="addCar btn btn-danger" data-idservice="informatica" data-img="img/legaldocGrande.svg"
-        data-info="Asesor Legal 3" data-precio="50.00" data-statu="0">Eliminar del carrito</a>
-      </div>
-    </div>
-    <br>
-    <br>
-    <div class="">
-      <h5 class="card-title" id="precioTotal">Total: B/0.00</h5>
-    </div>
-    <br>
-    <div class="container text-center">
-      <a href="../../index.html">
-        <button class="btn btn-success">Pagar</button>
-      </a>
-    </div>
-  
-    <br>
-    </div>
-</div>
+    <!-- Replace "test" with your own sandbox Business account app client ID -->
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=AWmJPfKNxZsl2NXOur3IzZo1JNIxDJIpLOt57RzkndJBPHoA5Rs-vhy2WHxwR9pTgNERUyxENvdaEl9i"></script>
+    <!-- Set up a container element for the button -->
+    <div id="paypal-button-container"></div>
+    <script>
+      paypal.Buttons({
+        // Sets up the transaction when a payment button is clicked
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                currency_code: "USD",
+                value: "77.44", // Can also reference a variable or function
+                breakdown: {
+                  item_total: {  /* Required when including the `items` array */
+                    currency_code: "USD",
+                    value: "77.44"
+                  }
+                }
 
 
-<!-- ======= Final del contenido ======= -->
+              },
+           
+              items: [
+                {
+                  name: "First Product Name", /* Shows within upper-right dropdown during payment approval */
+                  description: "Optional descriptive text..", /* Item details will also be in the completed paypal.com transaction view */
+                  unit_amount: {
+                    currency_code: "USD",
+                    value: "50"
+                  },
+                  quantity: "1"
+                }
+                ,
+                {
+                  name: "Second Product Name", /* Shows within upper-right dropdown during payment approval */
+                  description: "Optional descriptive text..", /* Item details will also be in the completed paypal.com transaction view */
+                  unit_amount: {
+                    currency_code: "USD",
+                    value: "27.44"
+                  },
+                  quantity: "1"
+                }
+              ]
 
-<%- include('partes/footer'); %>
+            }]
+          });
+        },
+
+        // Finalize the transaction after payer approval
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(function (orderData) {
+            // Successful capture! For dev/demo purposes:
+            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+            const transaction = orderData.purchase_units[0].payments.captures[0];
+            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+            // When ready to go live, remove the alert and show a success message within this page. For example:
+            const element = document.getElementById('paypal-button-container');
+            element.innerHTML = '<h3>Thank you for your payment!</h3>';
+            // Or go to another URL:  actions.redirect('thank_you.html');
+          });
+        }
+      }).render('#paypal-button-container');
+    </script>
+    <br>
+  </div>
+  </div>
+
+
+  <!-- ======= Final del contenido ======= -->
+
+  <%- include('partes/footer'); %>
