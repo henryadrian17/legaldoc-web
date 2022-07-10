@@ -1,10 +1,14 @@
-//const API_URL = 'http://localhost:8080/legaldoc/api/v1/';
-const SITE_URL = 'http://localhost:3000';
+////CONFIGURACION DEL API Y SITIO WEB
+const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
+//const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
+const SITE_URL = 'http://localhost:3000'; //URL SITIO WEB
+///VARIABLES GLOBALES DE TRABAJO
+let lista_servicios = []; //lista de servicios
+let carrito = []; //ITEMS EN EL CARRITO
+let asesor_lista_servicios;
+let servicioSeleccionado;
 
-const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/';
-
-let lista_servicios = [];
-
+//FUNCIONES DE LOGIN
 function registrarUsuario() {
     let usuario = {
         nombre: document.getElementById('nombre'),
@@ -150,6 +154,7 @@ function cerrarSesion() {
     });
 }
 
+//FUNCIONES LISTA DE ASESORES
 function traerListaDeAsesores(pageNum) {
     console.log(pageNum);
     SwalLoading("");
@@ -179,91 +184,6 @@ function traerListaDeAsesores(pageNum) {
         Swal.close();
         SwalError("Error al traer lista de asesores");
     }
-}
-
-function mostrarContratarAsesor() {
-    SwalLoading("");
-    try {
-        let id = window.location.href.split("?")[1].split("=")[1];
-        fetch(API_URL.concat('asesores\\').concat(id), {
-            method: 'GET'
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            if (data.serviceStatus.status == 200) {
-                // replace item with class row no-gutters using generarTarjetaAsesor(data)
-                let asesor = data.data;
-                let asesorBox = document.getElementsByClassName("row no-gutters")[0];
-                asesorBox.innerHTML = generarTarjetaAsesor(asesor);
-                lista_servicios = asesor.servicios;
-                mostrarListaServicios(lista_servicios[0].id);
-            }
-            Swal.close()
-        }).catch(function (error) {
-            Swal.close()
-            SwalError("Error al traer asesor");
-        })
-    } catch (e) {
-        Swal.close()
-        SwalError("Error al traer asesor");
-    }
-}
-
-function mostrarListaServicios(idServicio) {
-    lista_servicios.forEach(servicio => {
-        if (servicio.id === idServicio) {
-            let servicioBox = document.getElementsByClassName("col-6  mb-3 mt-2")[1];
-            servicioBox.innerHTML = generarTarjetaServicio(servicio);
-        }
-    })
-}
-
-function onchangeServicios() {
-    let id = document.getElementsByClassName("form-select mt-2")[0].value;
-    mostrarListaServicios(parseInt(id));
-}
-
-function generarTarjetaServicio(servicio) {
-    serDetalle = `
-                    <h4>Precio B\\. ${servicio.precioServicio}</h4>
-                    <p>${servicio.descriptionServicio}</p>
-                    <select class="form-select mt-2" onchange="onchangeServicios()">
-                        ${lista_servicios.map(serviciom => `<option value="${serviciom.id}" ${serviciom.id === servicio.id ? 'select' : ""}>${serviciom.nombreServicio}</option>`).join("")}
-                    </select><br>
-                    <a href="/c_carritoCompra">
-                        <button type="button" class="btn btn-primary mt-2 botones">Contratar</button>
-                    </a><br>
-                    <a href="/c_carritoCompra">
-                        <button type="button" class="btn btn-primary mt-2 botones">Añadir al carrito</button>
-    `
-    return serDetalle;
-}
-
-
-function generarTarjetaAsesor(data) {
-    console.log(data);
-    tarjeta = `
-               
-                        <div class="col-md-4">
-                            
-                            <div class="card-body">
-                                <img src="${SITE_URL.concat("/img/").concat(data.foto)}" class="card-img" alt="...">
-                                <p class="card-title">${data.nombre} ${data.apellido}</>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">Asesor legal</h5>
-                                <p class="card-text">${data.descripcionUsuario}</p>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Contacto</h5>
-                            <p class="card-text">E-mail: ${data.correo}</p>
-                        </div>
-               
-    `
-    return tarjeta;
 }
 
 function generarTargetasAsesores(data) {
@@ -309,6 +229,84 @@ function paginadoListaAsesores(actual, solicitda, totalpaginas) {
     return paginas;
 }
 
+//FUNCIONES CONTRATAR ASESOR
+function getDatosdelAsesorYServicios() {
+    fetch(API_URL.concat('asesores/').concat(getUrlVars()["id"]), {
+        method: 'GET'
+    }).then(function (response) {
+        return response.json();
+
+    }).then(function (data) {
+        asesor_lista_servicios = data.data;
+        let carritoCookie = getItemsCarritoFromCookie();
+        lista_servicios = data.data.servicios.filter(servi => !carritoCookie.includes(servi.id.toString()));
+        servicioSeleccionado = lista_servicios[0];
+        showAsesorCard();
+        showServiciosCard();
+        return data;
+    }).catch(function (error) {
+        console.log(error);
+        SwalError("Error al traer datos del asesor");
+    });
+}
+
+function getIdServicioSelect() {
+    let select = document.getElementsByClassName("form-select mt-2")[0];
+    return select.options[select.selectedIndex].value;
+}
+
+function showAsesorCard() {
+    let asesorbox = document.getElementsByClassName(" col-6 card mb-3 mt-2 ")[0];
+    asesorbox.innerHTML = `
+    <div class="row no-gutters">
+                        <div class="col-md-4">
+                            <img src="${SITE_URL.concat('/img/').concat(asesor_lista_servicios.foto)}" class="card-img" alt="${asesor_lista_servicios.nombre.concat(' ').concat(asesor_lista_servicios.apellido)}">
+                            <div class="card-body text-center">
+                                <h7 class="card-title">ASESOR LEGAL</h7>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">${asesor_lista_servicios.nombre.concat(' ').concat(asesor_lista_servicios.apellido)}</h5>
+                                <p class="card-text">${asesor_lista_servicios.descripcionUsuario}</p>
+                            </div>
+                        </div>
+                    </div>
+    `;
+}
+
+function showServiciosCard() {
+    let serviciosbox = document.getElementsByClassName("col-6  mb-3 mt-2")[1];
+    if (servicioSeleccionado !== undefined && servicioSeleccionado !== null) {
+        serviciosbox.innerHTML = ` 
+                    <h4>Precio ${new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(servicioSeleccionado.precioServicio)}</h4>
+                    <p>${servicioSeleccionado.descriptionServicio}</p>
+                    <select class="form-select mt-2" onchange="serviciosOnChange()">
+                        ${lista_servicios.map(servicio => `<option value="${servicio.id}" ${servicio.id === servicioSeleccionado.id ? 'selected' : ''}>${servicio.nombreServicio}</option>`).join('')}
+                    </select><br>
+                    <a href="/c_carritoCompra">
+                        <button type="button" class="btn btn-primary mt-2 botones">Contratar</button>
+                    </a><br>
+                        <button type="button" class="btn btn-primary mt-2 botones" onclick="agregarItemAlCarrito()">Añadir al carrito</button>
+                    <br>
+    `;
+    }else{
+        serviciosbox.innerHTML = ` 
+                    <h4>No hay servicios para este asesor</h4>
+                    <p>Por favor, seleccione otro asesor</p>
+    `;
+    }
+}
+
+function serviciosOnChange() {
+    servicioSeleccionado = lista_servicios.find(servicio => servicio.id == getIdServicioSelect());
+    showServiciosCard();
+}
+
+/// FUNCTIONES DE ALERTAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SwalError(message) {
     Swal.fire({
         icon: 'error',
@@ -362,4 +360,58 @@ function SwalRedirect(message, url) {
         window.location.href = url;
     });
 }
+
+
+////////carrito de compra//////////////
+
+function getItemsCarritoFromCookie() {
+    try {
+        return carritoCompra = document.cookie.split("carritoCompra=")[1].split(";")[0].split(",");
+    } catch (e) {
+        return [];
+    }
+}
+
+function getCarritoDataFromServer() {
+    fetch(API_URL.concat("carrito"), {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "Carrito-Compra": getItemsCarritoFromCookie().join(",")
+        }
+    }).then(response => {
+        return response.json();
+    }).then(data => {
+        carrito = data.data.content;
+    }).catch(error => {
+        carrito = [];
+    })
+}
+
+function agregarItemAlCarrito() {
+    let id = getIdServicioSelect();
+    let idItems = getItemsCarritoFromCookie();
+    if (!idItems.includes(id)) {
+        idItems.push(id);
+        lista_servicios.splice(lista_servicios.findIndex(servicio => servicio.id == id), 1);
+        servicioSeleccionado = lista_servicios[0];
+        showServiciosCard();
+        document.cookie = "carritoCompra=" + idItems.join(",");
+    } else {
+        SwalError("El servicio ya esta en el carrito");
+    }
+}
+
+///funciones globales
+function getUrlVars() {
+    let vars = {};
+    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+///FUNCIONES EJECUTADAS AL CARGAR EL SCRIPT////////////////////////////////////////////////////////////////////////////////////////////
+getCarritoDataFromServer();
+
 
