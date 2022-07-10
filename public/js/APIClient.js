@@ -1,6 +1,6 @@
 ////CONFIGURACION DEL API Y SITIO WEB
-const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
-//const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
+//const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
+const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
 const SITE_URL = 'http://localhost:3000'; //URL SITIO WEB
 ///VARIABLES GLOBALES DE TRABAJO
 let lista_servicios = []; //lista de servicios
@@ -287,16 +287,15 @@ function showServiciosCard() {
                     <select class="form-select mt-2" onchange="serviciosOnChange()">
                         ${lista_servicios.map(servicio => `<option value="${servicio.id}" ${servicio.id === servicioSeleccionado.id ? 'selected' : ''}>${servicio.nombreServicio}</option>`).join('')}
                     </select><br>
-                    <a href="/c_carritoCompra">
-                        <button type="button" class="btn btn-primary mt-2 botones">Contratar</button>
-                    </a><br>
+                    <button type="button" class="btn btn-primary mt-2 botones" onclick="showCarritoUsingCustoSwalHTML()">Ver carrito</button><br>
                         <button type="button" class="btn btn-primary mt-2 botones" onclick="agregarItemAlCarrito()">Añadir al carrito</button>
                     <br>
     `;
-    }else{
+    } else {
         serviciosbox.innerHTML = ` 
                     <h4>No hay servicios para este asesor</h4>
                     <p>Por favor, seleccione otro asesor</p>
+                    <button type="button" class="btn btn-primary mt-2 botones" onclick="showCarritoUsingCustoSwalHTML()">Ver carrito</button>
     `;
     }
 }
@@ -373,7 +372,7 @@ function getItemsCarritoFromCookie() {
 }
 
 function getCarritoDataFromServer() {
-    fetch(API_URL.concat("carrito"), {
+    return fetch(API_URL.concat("carrito"), {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
@@ -395,17 +394,80 @@ function agregarItemAlCarrito() {
         idItems.push(id);
         lista_servicios.splice(lista_servicios.findIndex(servicio => servicio.id == id), 1);
         showToastrAddServiceToCarrito();
+        carrito.push(servicioSeleccionado);
         servicioSeleccionado = lista_servicios[0];
         showServiciosCard();
+        idItems = idItems.filter(id => id !== "");
         document.cookie = "carritoCompra=" + idItems.join(",");
     } else {
         SwalError("El servicio ya esta en el carrito");
     }
 }
 
-function showToastrAddServiceToCarrito(){
+function eliminarItenDelCarrito(id) {
+    let idItems = getItemsCarritoFromCookie();
+    idItems.splice(idItems.findIndex(item => item == id), 1);
+    document.cookie = "carritoCompra=" + idItems.join(",");
+    carrito.splice(carrito.findIndex(item => item.id == id), 1);
+    showCarritoUsingCustoSwalHTML();
+}
+
+function showToastrAddServiceToCarrito() {
     toastr.success(`Servicio ${servicioSeleccionado.nombreServicio} agregado al carrito`);
 }
+
+function showCarritoUsingCustoSwalHTML() {
+    let i = 1;
+    Swal.fire({
+        title: 'Carrito de compra',
+        html: `<div class="row">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Precio</th>
+                                            <th scope="col">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${carrito.map(servicio => `<tr>
+                                            <th scope="row">${i++}</th>  
+                                            <td>${servicio.nombreServicio}</td>
+                                            <td>${new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(servicio.precioServicio)}</td>              
+                                            <td>
+                                                <button type="button" class="btn btn-primary" onclick="eliminarItenDelCarrito(${servicio.id})">Eliminar</button>
+                                            </td>
+                                        </tr>`).join('')}
+                                    </tbody>
+                               
+                                </table>
+                                <table class="table total">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Total</th>
+                                                            <th scope="col">${new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(carrito.reduce((total, servicio) => total + servicio.precioServicio, 0))}</th>                  
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>`,
+        width: '62rem',
+        confirmButtonText: 'Ok'
+    });
+}
+
 
 ///funciones globales
 function getUrlVars() {
