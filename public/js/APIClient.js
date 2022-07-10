@@ -394,12 +394,17 @@ function agregarItemAlCarrito() {
     if (!idItems.includes(id)) {
         idItems.push(id);
         lista_servicios.splice(lista_servicios.findIndex(servicio => servicio.id == id), 1);
+        showToastrAddServiceToCarrito();
         servicioSeleccionado = lista_servicios[0];
         showServiciosCard();
         document.cookie = "carritoCompra=" + idItems.join(",");
     } else {
         SwalError("El servicio ya esta en el carrito");
     }
+}
+
+function showToastrAddServiceToCarrito(){
+    toastr.success(`Servicio ${servicioSeleccionado.nombreServicio} agregado al carrito`);
 }
 
 ///funciones globales
