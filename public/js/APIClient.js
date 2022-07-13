@@ -566,7 +566,7 @@ function storeOrden(ordenObject){
         console.log(sresponse);
         if(sresponse.serviceStatus.status == 200){
             console.log("orden guardada");
-            window.location.href = "/c_misOrdenes?id=".concat(sresponse.data.id_orden);
+            window.location.href = "/c_miOrden?id=".concat(sresponse.data.id_orden);
         }else {
             SwalError("Error al guardar la orden");
         }
