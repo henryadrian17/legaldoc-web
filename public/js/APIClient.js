@@ -439,33 +439,28 @@ function showCarritoUsingCustoSwalHTML() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${carrito.map(servicio => `<tr>
+                                    ${carrito.length === 0 ? `<tr><td colspan="4">No hay servicios en el carrito</td></tr>` : carrito.map(servicio => `<tr>
                                             <th scope="row">${i++}</th>  
                                             <td>${servicio.nombreServicio}</td>
-                                            <td>${new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(servicio.precioServicio)}</td>              
+                                            <td>${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(servicio.precioServicio)}
+                                        </td>              
                                             <td>
                                                 <button type="button" class="btn btn-primary" onclick="eliminarItenDelCarrito(${servicio.id})">Eliminar</button>
                                             </td>
                                         </tr>`).join('')}
                                     </tbody>
-                               
-                                </table>
+                             </table>
+                             ${carrito.length === 0 ? ``: `
                                 <table class="table total">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Total</th>
-                                                            <th scope="col">${new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(carrito.reduce((total, servicio) => total + servicio.precioServicio, 0))}</th>                  
-                                                        </tr>
-                                                    </thead>
-                                                </table>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Total</th>
+                                                <th scope="col">${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(carrito.reduce((total, servicio) => total + servicio.precioServicio, 0))}</th>                  
+                                        </tr>
+                                    </thead>
+                                </table>`}
                             </div>
-                            <div id="paypal-button-container"></div>
+                            ${carrito.length===0 ? '':'<div id="paypal-button-container"></div>'}
                         </div>
                     </div>
                 </div>`,
