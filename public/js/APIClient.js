@@ -1,6 +1,6 @@
 ////CONFIGURACION DEL API Y SITIO WEB
-//const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
-const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
+const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
+//const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
 const SITE_URL = 'http://localhost:3000'; //URL SITIO WEB
 ///VARIABLES GLOBALES DE TRABAJO
 let lista_servicios = []; //lista de servicios
@@ -412,6 +412,11 @@ function eliminarItenDelCarrito(id) {
     showCarritoUsingCustoSwalHTML();
 }
 
+function limpiarCarrito() {
+    document.cookie = "carritoCompra=";
+    carrito = [];
+}
+
 function showToastrAddServiceToCarrito() {
     toastr.success(`Servicio ${servicioSeleccionado.nombreServicio} agregado al carrito`);
 }
@@ -485,20 +490,20 @@ getCarritoDataFromServer();
 
 
 function showButtonPago(){
+    let itemsList = carrito.map(servicio => {
+        return {
+            name: servicio.nombreServicio,
+            unit_amount: {
+                currency_code: "USD",
+                value: servicio.precioServicio.toString()
+            },
+            description: servicio.descriptionServicio.substring(0, 100),
+            quantity: 1
+        }
+    });
     return paypal.Buttons({
         // Sets up the transaction when a payment button is clicked
         createOrder: (data, actions) => {
-            let itemsList = carrito.map(servicio => {
-                return {
-                    name: servicio.nombreServicio,
-                    unit_amount: {
-                        currency_code: "USD",
-                        value: servicio.precioServicio.toString()
-                    },
-                    description: servicio.descriptionServicio.substring(0, 100),
-                    quantity: 1
-                }
-            });
             let total = carrito.reduce((total, servicio) => total + servicio.precioServicio, 0);
             return actions.order.create({
                 purchase_units: [{
@@ -520,16 +525,51 @@ function showButtonPago(){
 
         // Finalize the transaction after payer approval
         onApprove: (data, actions) => {
-            return actions.order.capture().then(function (orderData) {
+            return actions.order.capture()
+                .then(function (orderData) {
                 // Successful capture! For dev/demo purposes:
-                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-                const transaction = orderData.purchase_units[0].payments.captures[0];
-                alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
-                // When ready to go live, remove the alert and show a success message within this page. For example:
+                storeOrden(orderData);
+                limpiarCarrito()
                 const element = document.getElementById('paypal-button-container');
                 element.innerHTML = '<h3>Thank you for your payment!</h3>';
-                // Or go to another URL:  actions.redirect('thank_you.html');
+
             });
         }
     }).render('#paypal-button-container');
 }
+
+function storeOrden(ordenObject){
+    let bodydata = {
+        idPaypal:ordenObject.id,
+        fechaCreacion:ordenObject.create_time,
+        fechaActualizacion:ordenObject.update_time,
+        monto:ordenObject.purchase_units[0].amount.value,
+        moneda:ordenObject.purchase_units[0].amount.currency_code,
+        estado:ordenObject.status,
+        emailPagador:ordenObject.payer.email_address,
+        nombrePagador:ordenObject.payer.name.given_name.concat(" ").concat(ordenObject.payer.name.surname),
+        idPagador:ordenObject.payer.payer_id,
+        paisPagador:ordenObject.payer.address.country_code,
+        idServicios:carrito.map(servicio => servicio.id)
+    };
+    console.log(bodydata);
+    fetch(`${API_URL}storeorder`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': document.cookie.split("tockenDeAcceso=")[1].split(";")[0]
+        },
+        body: JSON.stringify(bodydata)
+    }).then( response =>{
+        return response.json();
+    }).then(sresponse => {
+        console.log(sresponse);
+        if(sresponse.serviceStatus.status == 200){
+            console.log("orden guardada");
+            window.location.href = "/c_misOrdenes?id=".concat(sresponse.data.id_orden);
+        }else {
+            SwalError("Error al guardar la orden");
+        }
+    })
+}
+
