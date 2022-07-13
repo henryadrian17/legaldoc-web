@@ -1,6 +1,6 @@
 ////CONFIGURACION DEL API Y SITIO WEB
 //const API_URL = 'http://localhost:8080/legaldoc/api/v1/'; //URL API LOCAL
-const API_URL = 'http://103.54.58.53:8080/legaldoc_web_services-0.0.1-SNAPSHOT/legaldoc/api/v1/'; //URL API REMOTA
+const API_URL = 'http://103.54.58.53:8080/legaldoc/api/v1/'; //URL API REMOTA
 const SITE_URL = 'http://localhost:3000'; //URL SITIO WEB
 ///VARIABLES GLOBALES DE TRABAJO
 let lista_servicios = []; //lista de servicios
