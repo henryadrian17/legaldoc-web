@@ -10,18 +10,12 @@
             </div>
             <div class="card-body" id="data">
               <h3>Servicio: Lorem Ipsum</h3><br>
-                <h3>Fecha: Lorem Ipsum</h3><br>
                   <h4>Información del servicio: </h2>
                     <p>
-                    <h4 style="text-align:justify">Lorem Ipsum is simply dummy text of the printing and typesetting
-                      industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                      unknown printer took a galley of type and scrambled it to make a type specimen book. It has
-                      survived not only five centuries, but also the leap into electronic typesetting, remaining
-                      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets
-                      containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus
-                      PageMaker including versions of Lorem Ipsum.
+                    <h4 style="text-align:justify">
                   </h4><br>
                   </p>
+                  <h3>Estado: Lorem Ipsum</h3><br>
             </div>
             </p>
             <div style=" display: flex; align-items: center; justify-content: center;">
@@ -47,10 +41,11 @@
       function mostrarData(data){
         console.log(data)
         let body = ''
-        data.data.detallesOrden.forEach(element => {
+        data.data.detallesOrden.forEach((element,i) =>{
           body += `
-          <div><h3>Servicio:${element.nombreServicio}</h3></div>
-           <h4>: ${element.descriptionServicio}</h4>
+          <div><h3>${i++}<br>Servicio:${element.nombreServicio}</h3></div>
+           <h3>Información del servicio: ${element.descriptionServicio}</h3>
+          <h3>Estado del servicio: ${element.estado}</h3>
           `
         })
         console.log(body)
