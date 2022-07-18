@@ -41,7 +41,8 @@
       function mostrarData(data){
         console.log(data)
         let body = ''
-        data.data.detallesOrden.forEach((element,i) =>{
+        let i = 1;
+        data.data.detallesOrden.forEach((element) =>{
           body += `
           <div><h3>${i++}<br>Servicio:${element.nombreServicio}</h3></div>
            <h3>Información del servicio: ${element.descriptionServicio}</h3>
