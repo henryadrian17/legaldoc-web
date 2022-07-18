@@ -1,32 +1,59 @@
 <%- include('partes/header'); %>
 
-<div class="">
-  <div class="container my-5">
+  <div class="">
+    <div class="container my-5">
       <div class="row my-5">
-          <div class="col-md-12">
-              <div class="card">
-                  <div class="card-header">
-                      <h3 class="card-title">Mi orden</h3>
-                  </div>
-                  <div class="card-body">
-                    <h3>Servicio: Lorem Ipsum</h2><br>
-                    <h3>Fecha: Lorem Ipsum</h2><br>
-                    <h3>Información del servicio: </h2>
-                    <p><h4 style="text-align:justify">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</h3><br>
-                    </p>
-                    <h2>Información del servicio: </h2>
-                    <p><h4 style="text-align:justify">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</h3></div>
-                    </p>
-                    <div style=" display: flex; align-items: center; justify-content: center;">
-                      <a href="/c_comunicacionAsesor">
-                        <button type="button" class="btn btn-primary botones">Comunicarse con el asesor</button>
-                      </a>
-                    </div>
-                  </div>
-              </div>
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Mi orden</h3>
+            </div>
+            <div class="card-body" id="data">
+              <h3>Servicio: Lorem Ipsum</h3><br>
+                <h3>Fecha: Lorem Ipsum</h3><br>
+                  <h4>Información del servicio: </h2>
+                    <p>
+                    <h4 style="text-align:justify">Lorem Ipsum is simply dummy text of the printing and typesetting
+                      industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                      unknown printer took a galley of type and scrambled it to make a type specimen book. It has
+                      survived not only five centuries, but also the leap into electronic typesetting, remaining
+                      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets
+                      containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus
+                      PageMaker including versions of Lorem Ipsum.
+                  </h4><br>
+                  </p>
+            </div>
+            </p>
+            <div style=" display: flex; align-items: center; justify-content: center;">
+              <a href="/c_comunicacionAsesor">
+                <button type="button" class="btn btn-primary botones">Comunicarse con el asesor</button>
+              </a>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
   </div>
-</div>
+  </div>
 
-<%- include('partes/footer'); %>
+  <script>
+    let url = 'http://103.54.58.53:8080/legaldoc/api/v1/order/2'
+    fetch(url)
+      .then(response => response.json())
+      .then(data => mostrarData(data))
+      .catch(error => console.log(error))
+
+
+      const mostrarData = (data) =>{
+        console.log(data)
+        let body = ''
+        for(let i = 0; i<data.length;i++){
+          body+= `<div><h3>Servicio:${data.data.detallesOrden[i].nombreServicio}</h3></div>` 
+          body+= `<h4>: ${data.data.detallesOrden[i].descriptionServicio}</h4>` 
+        }
+
+        document.getElementById(`data`).innerHTML = body
+      }
+  </script>
+
+  <%- include('partes/footer'); %>
