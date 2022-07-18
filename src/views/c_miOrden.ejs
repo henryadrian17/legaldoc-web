@@ -44,14 +44,16 @@
       .catch(error => console.log(error))
 
 
-      const mostrarData = (data) =>{
+      function mostrarData(data){
         console.log(data)
         let body = ''
-        for(let i = 0; i<data.length;i++){
-          body+= `<div><h3>Servicio:${data.data.detallesOrden[i].nombreServicio}</h3></div>` 
-          body+= `<h4>: ${data.data.detallesOrden[i].descriptionServicio}</h4>` 
-        }
-
+        data.data.detallesOrden.forEach(element => {
+          body += `
+          <div><h3>Servicio:${element.nombreServicio}</h3></div>
+           <h4>: ${element.descriptionServicio}</h4>
+          `
+        })
+        console.log(body)
         document.getElementById(`data`).innerHTML = body
       }
   </script>
