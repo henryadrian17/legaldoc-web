@@ -579,6 +579,7 @@ function showMyOrders(){
     }).then(sresponse => {
         let cardbody = document.getElementsByClassName('card-body')[0];
         let body = ``;
+        if(sresponse.data.length > 0){
         sresponse.data.forEach(orden => {
             body += `<tr>
                     <td>${orden.id}</td>
@@ -588,7 +589,12 @@ function showMyOrders(){
                     <td>${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(orden.montoOrden)}</td>
                     <td><a href="/c_miOrden?id=${orden.id}" class="btn btn-primary botones">Ver</a></td>
                 </tr>`;
-        });
+        });}
+        else{
+            body = `<tr>
+                    <td colspan="6" class="text-center"><h5>No hay ordenes</h5></td>
+                </tr>`;
+        }
         cardbody.innerHTML = `<table id="example" className="display" style="width:100%">
             <thead>
             <tr>
