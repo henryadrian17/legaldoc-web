@@ -547,7 +547,6 @@ function storeOrden(ordenObject){
         paisPagador:ordenObject.payer.address.country_code,
         idServicios:carrito.map(servicio => servicio.id)
     };
-    console.log(bodydata);
     fetch(`${API_URL}storeorder`, {
         method: 'POST',
         headers: {
@@ -568,3 +567,45 @@ function storeOrden(ordenObject){
     })
 }
 
+function showMyOrders(){
+    fetch(`${API_URL}order/user/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': document.cookie.split("tockenDeAcceso=")[1].split(";")[0]
+        }
+    }).then( response =>{
+        return response.json();
+    }).then(sresponse => {
+        let cardbody = document.getElementsByClassName('card-body')[0];
+        let body = ``;
+        sresponse.data.forEach(orden => {
+            body += `<tr>
+                    <td>${orden.id}</td>
+                    <td>${orden.estadoPago}</td>
+                    <td>${new Date(orden.fechaCreacionOrden).toLocaleString()}</td>
+                    <td>${new Date(orden.fechaActualizacionOrden).toLocaleString()}</td>
+                    <td>${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(orden.montoOrden)}</td>
+                    <td><a href="/c_miOrden?id=${orden.id}" class="btn btn-primary botones">Ver</a></td>
+                </tr>`;
+        });
+        cardbody.innerHTML = `<table id="example" className="display" style="width:100%">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>ESTADO</th>
+                <th>CREADO EN</th>
+                <th>ACTUALIZADA EL</th>
+                <th>MONTO</th>
+                <th>VER ORDEN</th>
+            </tr>
+            </thead>
+            <tbody>
+            ${body}
+            </tbody>
+        </table>
+        `
+    }).catch(error => {
+        SwalError("Error al obtener las ordenes");
+    })
+}
