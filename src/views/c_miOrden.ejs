@@ -19,8 +19,8 @@
             </div>
             </p>
             <div style=" display: flex; align-items: center; justify-content: center;">
-              <a href="/c_comunicacionAsesor">
-                <button type="button" class="btn btn-primary botones">Comunicarse con el asesor</button>
+              <a href="/c_misOrdenes">
+                <button type="button" class="btn btn-primary botones">Regresar</button>
               </a>
             </div>
           </div>
@@ -30,28 +30,11 @@
   </div>
   </div>
 
-  <script>
-    let url = 'http://103.54.58.53:8080/legaldoc/api/v1/order/2'
-    fetch(url)
-      .then(response => response.json())
-      .then(data => mostrarData(data))
-      .catch(error => console.log(error))
 
-
-      function mostrarData(data){
-        console.log(data)
-        let body = ''
-        let i = 1;
-        data.data.detallesOrden.forEach((element) =>{
-          body += `
-          <div><h3>${i++}<br>Servicio:${element.nombreServicio}</h3></div>
-           <h3>Información del servicio: ${element.descriptionServicio}</h3>
-          <h3>Estado del servicio: ${element.estado}</h3>
-          `
-        })
-        console.log(body)
-        document.getElementById(`data`).innerHTML = body
-      }
-  </script>
 
   <%- include('partes/footer'); %>
+<script>
+  $(document).ready(function(){
+    showMyOrdersDetail();
+  })
+</script>

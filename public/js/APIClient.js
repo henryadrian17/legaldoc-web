@@ -145,7 +145,8 @@ function cerrarSesion() {
     }).then(function (data) {
         if (data.serviceStatus.status == 200) {
             document.cookie = "tockenDeAcceso=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            SwalRedirect("Sesion cerrada", "/login");
+            limpiarCarrito();
+            SwalRedirect("Cerrando sesion", "/login");
         } else {
             SwalError(data.serviceStatus.message);
         }
@@ -615,6 +616,46 @@ function showMyOrders(){
     })
 }
 
+function showMyOrdersDetail(){
+    let id = getUrlVars().id;
+    fetch(`${API_URL}order/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then( response =>{
+        return response.json();
+    }).then(sresponse => {
+        document.getElementsByClassName('card-title')[0].innerHTML = `Orden #${sresponse.data.id}`;
+        let cardbody = document.getElementsByClassName('card-body')[0];
+        let body = ``;
+        let detallesOrden = sresponse.data.detallesOrden;
+        body += `<table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Estado</th>
+                    <th>Asesor</th>
+                    <th>Contactar asesor</th>
+                </tr>
+                </thead>
+                <tbody>`;
+        detallesOrden.forEach(detalle => {
+            body += `<tr>
+                    <td>${detalle.nombreServicio}</td>
+                    <td>${detalle.descriptionServicio.length > 200 ? detalle.descriptionServicio.substring(0,200).concat("...") : detalle.descriptionServicio }</td>
+                    <td>${detalle.estado}</td>
+                    <td>${detalle.asesor.nombre.concat(" ").concat(detalle.asesor.apellido)}</td>
+                    <td><a href="#" class="btn btn-primary botones">Contactar</a></td>
+                </tr>`;
+        });
+
+        cardbody.innerHTML = body;
+    }).catch(error => {
+        SwalError("Error al obtener la orden");
+    })
+}
 //if document is ready
 $(document).ready(function () {
     verificarSesion();
