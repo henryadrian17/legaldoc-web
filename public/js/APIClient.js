@@ -593,7 +593,7 @@ function showMyOrders(){
             <thead>
             <tr>
                 <th>ID</th>
-                <th>ESTADO</th>
+                <th>ESTADO PAGO</th>
                 <th>CREADO EN</th>
                 <th>ACTUALIZADA EL</th>
                 <th>MONTO</th>
