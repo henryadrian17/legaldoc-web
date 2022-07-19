@@ -470,20 +470,6 @@ function showCarritoUsingCustoSwalHTML() {
     showButtonPago();
 }
 
-
-///funciones globales
-function getUrlVars() {
-    let vars = {};
-    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
-        vars[key] = value;
-    });
-    return vars;
-}
-
-///FUNCIONES EJECUTADAS AL CARGAR EL SCRIPT////////////////////////////////////////////////////////////////////////////////////////////
-getCarritoDataFromServer();
-
-
 function showButtonPago(){
     let itemsList = carrito.map(servicio => {
         return {
@@ -522,13 +508,13 @@ function showButtonPago(){
         onApprove: (data, actions) => {
             return actions.order.capture()
                 .then(function (orderData) {
-                // Successful capture! For dev/demo purposes:
-                storeOrden(orderData);
-                limpiarCarrito()
-                const element = document.getElementById('paypal-button-container');
-                element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Successful capture! For dev/demo purposes:
+                    storeOrden(orderData);
+                    limpiarCarrito()
+                    const element = document.getElementById('paypal-button-container');
+                    element.innerHTML = '<h3>Thank you for your payment!</h3>';
 
-            });
+                });
         }
     }).render('#paypal-button-container');
 }
@@ -566,6 +552,19 @@ function storeOrden(ordenObject){
         }
     })
 }
+///funciones globales
+function getUrlVars() {
+    let vars = {};
+    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+///FUNCIONES EJECUTADAS AL CARGAR EL SCRIPT////////////////////////////////////////////////////////////////////////////////////////////
+getCarritoDataFromServer();
+///OTRAS FUNCIONES//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 function showMyOrders(){
     fetch(`${API_URL}order/user/`, {
@@ -615,3 +614,8 @@ function showMyOrders(){
         SwalError("Error al obtener las ordenes");
     })
 }
+
+//if document is ready
+$(document).ready(function () {
+    verificarSesion();
+});
